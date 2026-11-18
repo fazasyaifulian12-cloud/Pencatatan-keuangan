@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#123d2b"><meta name="description" content="Catat pemasukan dan pengeluaran pribadi dengan mudah."><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Keuanganku — Smart Personal Finance</title>
+<style>
+:root{--bg:#f5f7f6;--card:#fff;--ink:#17221d;--muted:#718078;--line:#e7ece8;--green:#168653;--green2:#e8f5ed;--red:#d94b4b;--shadow:0 8px 28px #1d35200b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.app{max-width:1180px;margin:auto;padding:26px 22px 50px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px}.brand{display:flex;gap:12px;align-items:center}.logo{width:44px;height:44px;border-radius:14px;background:var(--green);color:white;display:grid;place-items:center;font-size:22px;font-weight:800}.brand h1{font-size:20px;margin:0}.brand p{margin:1px 0 0;color:var(--muted);font-size:12px}.pill{border:1px solid #cfe6d7;background:var(--green2);color:var(--green);padding:7px 12px;border-radius:30px;font-size:12px;font-weight:700}
+h2{font-size:17px;margin:0 0 14px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:var(--shadow)}.balance{background:#123d2b;color:#fff;border:0}.balance .muted{color:#c2d8cb}.big{font-size:30px;font-weight:800;letter-spacing:-1px;margin:7px 0}.metric{font-size:24px;font-weight:750;margin-top:9px}.label{font-size:12px;color:var(--muted);font-weight:650;text-transform:uppercase;letter-spacing:.05em}.green{color:var(--green)}.red{color:var(--red)}
+.layout{display:grid;grid-template-columns:1.05fr 1.5fr;gap:16px;margin-top:18px}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;color:var(--ink)}.field input:focus,.field select:focus{outline:2px solid #b7e2c8;border-color:var(--green)}
+.row{display:flex;gap:10px}.row>*{flex:1}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:750;cursor:pointer;background:var(--green);color:white}.btn.secondary{background:#eef3ef;color:#274333}.btn.danger{background:#fff0f0;color:var(--red)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.upload{border:1.5px dashed #b9c9bf;background:#f8fbf9;border-radius:13px;padding:17px;text-align:center;cursor:pointer}.upload strong{display:block}.upload small{color:var(--muted)}.upload input{display:none}.preview{max-width:100%;max-height:150px;display:none;margin:12px auto 0;border-radius:9px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 12px}.toolbar input,.toolbar select{padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:white}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}td.amount{text-align:right;font-weight:750;white-space:nowrap}.type{font-size:11px;border-radius:20px;padding:4px 8px;font-weight:700}.income{background:#e7f6ed;color:#137844}.expense{background:#fff0ef;color:#c33f3f}.empty{text-align:center;padding:35px;color:var(--muted)}
+.note{font-size:12px;color:var(--muted);margin-top:10px}.notice{padding:12px 14px;background:#fff8e8;border:1px solid #f2dfad;border-radius:12px;color:#72551b;font-size:12px;margin-top:14px}
+.footer{margin-top:20px;color:var(--muted);font-size:11px;text-align:center}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.layout{grid-template-columns:1fr}.app{padding:18px 13px}.toolbar{align-items:flex-start;flex-direction:column}.toolbar input{width:100%}.top{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand"><div class="logo">K</div><div><h1>KEUANGANKU</h1><p>Smart Personal Finance</p></div></div><div style="display:flex;gap:8px;align-items:center"><button class="btn secondary" id="installApp" style="display:none;padding:8px 11px">＋ Pasang aplikasi</button><span class="pill">PWA</span></div></header>
+<section class="grid">
+ <div class="card balance"><div class="muted">TOTAL SALDO</div><div class="big" id="balance">Rp0</div><div class="muted">Pemasukan dikurangi pengeluaran</div></div>
+ <div class="card"><div class="label">Total pemasukan</div><div class="metric green" id="income">Rp0</div><div class="muted">Akumulasi transaksi masuk</div></div>
+ <div class="card"><div class="label">Total pengeluaran</div><div class="metric red" id="expense">Rp0</div><div class="muted">Akumulasi transaksi keluar</div></div>
+</section>
+<section class="layout">
+ <div class="card">
+  <h2>Tambah transaksi</h2>
+  <div class="field"><label>Jenis transaksi</label><select id="type"><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></div>
+  <div class="field"><label>Nominal (Rupiah)</label><input id="amount" type="number" min="1" placeholder="Contoh: 35000"></div>
+  <div class="row">
+   <div class="field"><label>Kategori</label><select id="category"><option>Makanan</option><option>Transportasi</option><option>Belanja</option><option>Kuliah/Pendidikan</option><option>Tagihan</option><option>Kesehatan</option><option>Hiburan</option><option>Gaji/Uang saku</option><option>Transfer</option><option>Lainnya</option></select></div>
+   <div class="field"><label>Tanggal</label><input id="date" type="date"></div>
+  </div>
+  <div class="field"><label>Keterangan</label><input id="description" placeholder="Contoh: makan siang"></div>
+  <div class="field"><label>Lampiran foto (opsional)</label><label class="upload" for="photo"><strong>＋ Pilih foto nota / bukti / uang</strong><small>Foto disimpan hanya di sesi ini sebagai lampiran pratinjau</small><input id="photo" type="file" accept="image/*"><img class="preview" id="preview" alt="Pratinjau foto"></label></div>
+  <button class="btn" style="width:100%" id="save">Simpan transaksi</button>
+  <p class="note">Data prototipe disimpan di penyimpanan browser perangkat ini.</p>
+ </div>
+ <div class="card">
+  <h2>Ringkasan pengeluaran</h2><div id="categorySummary" class="empty">Belum ada transaksi pengeluaran.</div>
+  <div class="notice"><b>Catatan otomatisasi:</b> pembacaan foto dengan AI dan pencatatan langsung dari WhatsApp belum aktif pada prototipe ini. Keduanya memerlukan layanan AI, server, database online, dan WhatsApp Business Cloud API.</div>
+ </div>
+</section>
+<div class="toolbar"><div><h2 style="margin:0">Riwayat transaksi</h2><span class="muted" style="font-size:12px" id="count">0 transaksi</span></div><div class="row" style="max-width:440px"><input id="search" placeholder="Cari transaksi..."><select id="filter"><option value="all">Semua</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select></div></div>
+<div class="card" style="padding:5px 17px;overflow:auto"><table><thead><tr><th>Tanggal</th><th>Transaksi</th><th>Kategori</th><th style="text-align:right">Nominal</th><th></th></tr></thead><tbody id="transactions"><tr><td colspan="5" class="empty">Belum ada transaksi. Tambahkan transaksi pertama.</td></tr></tbody></table></div>
+<div style="display:flex;gap:10px;margin-top:13px;flex-wrap:wrap"><button class="btn secondary" id="export">Unduh CSV</button><button class="btn danger" id="clear">Hapus seluruh data</button></div>
+<div class="footer">KEUANGANKU · Prototipe awal · Data tersimpan lokal di browser, belum tersinkron antarperangkat.</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n||0);
+let items=JSON.parse(localStorage.getItem('keuanganku_items')||'[]');
+let photoData='';
+$('date').value=new Date().toISOString().slice(0,10);
+$('photo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{photoData=r.result;$('preview').src=photoData;$('preview').style.display='block'};r.readAsDataURL(f)});
+function save(){const amount=Number($('amount').value);if(!amount||amount<1){alert('Masukkan nominal transaksi yang valid.');return}const item={id:Date.now(),type:$('type').value,amount,category:$('category').value,date:$('date').value,description:$('description').value.trim()||$('category').value,photo:photoData};items.unshift(item);localStorage.setItem('keuanganku_items',JSON.stringify(items));$('amount').value='';$('description').value='';$('photo').value='';$('preview').style.display='none';photoData='';render()}
+function render(){const inc=items.filter(x=>x.type==='income').reduce((a,x)=>a+x.amount,0),exp=items.filter(x=>x.type==='expense').reduce((a,x)=>a+x.amount,0);$('balance').textContent=rupiah(inc-exp);$('income').textContent=rupiah(inc);$('expense').textContent=rupiah(exp);$('count').textContent=items.length+' transaksi';
+const q=$('search').value.toLowerCase(),f=$('filter').value;const shown=items.filter(x=>(f==='all'||x.type===f)&&[x.description,x.category,x.date].join(' ').toLowerCase().includes(q));
+$('transactions').innerHTML=shown.length?shown.map(x=>`<tr><td>${new Date(x.date+'T00:00:00').toLocaleDateString('id-ID')}</td><td><b>${esc(x.description)}</b></td><td>${esc(x.category)}</td><td class="amount ${x.type==='income'?'green':'red'}">${x.type==='income'?'+':'−'} ${rupiah(x.amount)}</td><td><button class="btn danger" style="padding:6px 9px" onclick="removeItem(${x.id})">Hapus</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Tidak ada transaksi yang cocok.</td></tr>';
+const cats={};items.filter(x=>x.type==='expense').forEach(x=>cats[x.category]=(cats[x.category]||0)+x.amount);const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);$('categorySummary').innerHTML=entries.length?entries.map(([k,v])=>`<div style="margin:12px 0"><div style="display:flex;justify-content:space-between;font-size:13px"><b>${esc(k)}</b><span>${rupiah(v)}</span></div><div style="height:8px;background:#edf1ee;border-radius:10px;margin-top:6px;overflow:hidden"><div style="height:8px;width:${v/Math.max(...entries.map(z=>z[1]))*100}%;background:#168653;border-radius:10px"></div></div></div>`).join(''):'<div class="empty">Belum ada transaksi pengeluaran.</div>'}
+function removeItem(id){items=items.filter(x=>x.id!==id);localStorage.setItem('keuanganku_items',JSON.stringify(items));render()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('save').onclick=save;$('search').oninput=render;$('filter').onchange=render;
+$('clear').onclick=()=>{if(confirm('Hapus semua transaksi dari browser ini?')){items=[];localStorage.removeItem('keuanganku_items');render()}};
+$('export').onclick=()=>{const rows=[['Tanggal','Jenis','Kategori','Keterangan','Nominal'],...items.map(x=>[x.date,x.type,x.category,x.description,x.amount])];const csv=rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='laporan-keuanganku.csv';a.click();URL.revokeObjectURL(a.href)};
+render();
+let installPrompt=null;
+const installButton=document.getElementById('installApp');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installButton.style.display='inline-block'});
+installButton.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installButton.style.display='none'});
+window.addEventListener('appinstalled',()=>{installButton.style.display='none'});
+if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.log('Service worker:',err)))}
+</script>
+</body></html>
